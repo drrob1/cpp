@@ -1,0 +1,17 @@
+# From a usenet post, the target of the prerequisite rule had the source file, not an
+# object file.
+#
+objects = testtimlibc.o timlibc.o
+CXXFLAGS = -Wall -g  -std=c++11 
+
+hello : $(objects) 
+	g++ $(CXXFLAGS)  -o testtimlibc $(objects)
+
+testtimlibc.cpp : timlibc.h macros.h
+
+timlibc.cpp :   timlibc.h  macros.h
+
+.PHONY : clean
+clean : 
+	-rm -v testtimlibc $(objects)
+

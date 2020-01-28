@@ -1,0 +1,19 @@
+# From a usenet post, the target of the prerequisite rule had the source file, not an
+# object file.
+#
+objects = tokenizec.o ttest.o getcommandline.o
+CXXFLAGS = -Wall -g  -std=c++11 
+
+ttest : $(objects) 
+	g++ $(CXXFLAGS)  -o ttest $(objects)
+
+ttest.cpp : tokenizec.h macros.h getcommandline.h
+
+tokenizec.cpp :   tokenizec.h  macros.h
+
+getcommandline.cpp : 
+
+.PHONY : clean
+clean : 
+	-rm -v ttest $(objects)
+

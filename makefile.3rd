@@ -1,0 +1,14 @@
+objects = hellomain.o hello.o
+CXXFLAGS = -Wall -g -Os
+
+hello : $(objects) 
+	g++ $(CXXFLAGS)  -o hello $(objects)
+
+hellomain.o : hellomain.cpp
+
+hello.o : hello.cpp
+
+.PHONY : clean
+clean : 
+	-rm -v hello $(objects)
+

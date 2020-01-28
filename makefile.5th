@@ -1,0 +1,17 @@
+# From a usenet post, the target of the prerequisite rule had the source file, not an
+# object file.  And this makefile also works.  Make seems to be a very flexible tool.
+#
+objects = hellomain.o hello.o
+CXXFLAGS = -Wall -g -Os
+
+hello : $(objects) 
+	g++ $(CXXFLAGS)  -o hello $(objects)
+
+hellomain.cpp :   # blank prerequisite to just use the implicit hellomain.cpp.  Yeah, it does work.
+
+hello.cpp :       # blank prerequisit to see if it works to use just implciit rules here.
+
+.PHONY : clean
+clean : 
+	-rm -v hello $(objects)
+

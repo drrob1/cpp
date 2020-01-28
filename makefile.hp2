@@ -1,0 +1,24 @@
+# From a usenet post, the target of the prerequisite rule had the source file, not an object file.
+# But then another post said it should be an object file.  It's interesting that it works anyway.
+objects = tokenizec.o getcommandline.o timlibc.o hpcalcc.o holidaycalc.o HP2cursed.o
+CXXFLAGS = -Wall -g  -std=c++11 
+
+hpcursed : $(objects) 
+	g++ $(CXXFLAGS)  -o hp2cursed $(objects) -lncurses
+
+HP2cursed.o : tokenizec.h macros.h getcommandline.h timlibc.h hpcalcc.h
+
+tokenizec.o :   tokenizec.h  macros.h
+
+getcommandline.o : macros.h
+
+timlibc.o : timlibc.h macros.h
+
+hpcalcc.o : hpcalcc.h macros.h
+
+holidaycalc.o : holidaycalc.h macros.h
+
+.PHONY : clean
+clean : 
+	-rm -v hpcursed $(objects)
+

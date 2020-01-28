@@ -1,0 +1,11 @@
+hello : hellomain.o hello.o
+	g++ -Wall -o hello hellomain.o hello.o
+
+hellomain.o : hellomain.cpp
+	g++ -Wall -c hellomain.cpp
+hello.o : hello.cpp
+	g++ -Wall -c hello.cpp
+
+clean : 
+	rm -v hello hellomain.o hello.o
+

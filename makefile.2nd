@@ -1,0 +1,13 @@
+objects = hellomain.o hello.o
+
+hello : $(objects) 
+	g++ -Wall -o hello $(objects)
+
+hellomain.o : hellomain.cpp
+	g++ -Wall -c hellomain.cpp
+hello.o : hello.cpp
+	g++ -Wall -c hello.cpp
+
+clean : 
+	rm -v hello hellomain.o hello.o
+
