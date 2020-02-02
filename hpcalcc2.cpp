@@ -47,6 +47,7 @@
   22 Jan 20 -- Now called hpcalcc2.cpp, to update code and use vectors.
   25 Jan 20 -- Code is basically working.  Added sigfig, ? for help, and StackNames array.
   27 Jan 20 -- Made sigfig = -1 to see what that does.  It works like in Go.  I guess this is std behavior.
+   2 Feb 20 -- Added fixN command to behave like sigN command.
 */
 
 /*
