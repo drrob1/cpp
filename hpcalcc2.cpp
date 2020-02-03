@@ -407,13 +407,13 @@ RETURN int FUNCTION HCF(int a, int b) {
   return a1;
 };// HCF
 
-/*  From Go.  Will convert to C++. */
+/*  From Go.  Converting to C++. */
 // ------------------------------------------------- IsPrime -----------------
 //  func IsPrime(real float64) bool { // The real input is to allow from stack.
 bool FUNCTION IsPrime(double real) { // The real input is to allow from stack.
 
 	int t = 3;
-	int RoundSqrt, Uint, Sqrt;  // Uint was just that in Go, but I won't do that here.
+	int RoundSqrt, Uint, Rsqrt;  // Uint was just that in Go, but I won't do that here.
 
 	Uint = round(abs(real));
 
@@ -425,11 +425,11 @@ bool FUNCTION IsPrime(double real) { // The real input is to allow from stack.
 		return false;
 	}
 
-	Sqrt = sqrt(real);
-	RoundSqrt = round(Sqrt);
+	Rsqrt = sqrt(real);
+	RoundSqrt = round(Rsqrt);
 
 	WHILE t <= RoundSqrt DO
-		if (Uint%t == 0) {
+		if (Uint % t == 0) {
 			return false;
 		}
 		t += 2;
@@ -437,54 +437,95 @@ bool FUNCTION IsPrime(double real) { // The real input is to allow from stack.
 	return true;
 } // IsPrime
 
-/*  From Go.  Will convert to C++.
+
+// ------------------------------------------------- IsPrimeInt -----------------
+//func IsPrimeInt(n int) bool {
+bool FUNCTION IsPrimeInt(int n) {
+
+	int t = 3;
+
+	int Uint = n;
+
+	IF Uint == 0 || Uint == 1 THEN
+		return false;
+    ELSIF Uint == 2 || Uint == 3 THEN
+		return true;
+	ELSIF Uint%2 == 0 THEN
+		return false;
+	ENDIF
+
+    int Sqrt = sqrt( (double) Uint);
+	int UintSqrt = (int) Sqrt;
+
+	WHILE t <= UintSqrt DO
+		IF Uint%t == 0 THEN
+			return false;
+		ENDIF;
+		t += 2;
+	ENDWHILE;
+	return true;
+} // IsPrimeInt
+
 // ------------------------------------------------- PrimeFactorization ---------------------------------
-func PrimeFactorization(N int) []int {
-	var PD = [...]int{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47} // Prime divisors array
+//func PrimeFactorization(N int) []int {
+vector<int> FUNCTION PrimeFactorization(int N) {
+	ARRAYOF int PD[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47}; // Prime divisors array
+    vector<int> PrimeFactors;
+    int n;
 
-	PrimeFactors := make([]int, 0, 10)
+    PrimeFactors.clear();
 
-	n := N
-	for i := 0; i < len(PD); i++ { // outer loop to sequentially test the prime divisors
-		for n > 0 && n%PD[i] == 0 {
-			PrimeFactors = append(PrimeFactors, PD[i])
-			n = n / PD[i]
-		}
-		if n == 0 || IsPrimeInt(n) {
-			PrimeFactors = append(PrimeFactors, n)
-			break
-		}
-	}
-	return PrimeFactors
+	n = N;
+	FOR int i = 0; i < sizeof(PD); i++ DO // outer loop to sequentially test the prime divisors
+		WHILE n > 0 && n%PD[i] == 0 DO
+			PrimeFactors.push_back(PD[i]);
+			n = n / PD[i];
+		ENDWHILE;
+		IF n == 0 || IsPrimeInt(n) THEN
+			PrimeFactors.push_back(n);
+			break;
+		ENDIF
+	ENDFOR;
+	return PrimeFactors;
 
 } // PrimeFactorization
 
-// ------------------------------------------------- IsPrimeInt -----------------
-func IsPrimeInt(n int) bool {
+//----------------------------------------------- usqrt ---------------------------
+//func usqrt(u uint) uint {
+int FUNCTION usqrt(int u) {
 
-	var t uint64 = 3
+	int Sqrt = u / 2;
 
-	Uint := uint64(n)
+	FOR int i = 0; i < 30; i++ DO
+		int guess = u / Sqrt;
+		Sqrt = (guess + Sqrt) / 2;
+		IF Sqrt-guess <= 1 THEN // recall that this is not floating math.
+			break;
+		ENDIF;
+	ENDFOR;
+	return Sqrt;
+}
 
-	if Uint == 0 || Uint == 1 {
-		return false
-	} else if Uint == 2 || Uint == 3 {
-		return true
-	} else if Uint%2 == 0 {
-		return false
-	}
+// ------------------------------------------------- NextPrimeFac -----------------
+//func NextPrimeFac(n, startfac uint) (uint, bool) { // note that this is the reverse of IsPrime
+bool FUNCTION NextPrimeFac(int n, int REF startfac) { // note that this is the reverse of IsPrime
 
-	sqrt := math.Sqrt(float64(Uint))
-	UintSqrt := uint64(sqrt)
+	int t = startfac;
+
+	int UintSqrt = usqrt(n);
 
 	for t <= UintSqrt {
-		if Uint%t == 0 {
-			return false
+		if n%t == 0 {
+			return t, true;
 		}
-		t += 2
+		if t == 2 {
+			t = 3;
+		} else {
+			t += 2;
+		}
 	}
-	return true
-} // IsPrimeInt
+	return 0, false;
+} // IsPrime
 
 // --------------------------------------- PrimeFactorMemoized -------------------
 func PrimeFactorMemoized(U uint) []uint {
@@ -513,42 +554,6 @@ func PrimeFactorMemoized(U uint) []uint {
 	//	fmt.Println()
 	return PrimeUfactors
 }
-
-// ------------------------------------------------- NextPrimeFac -----------------
-func NextPrimeFac(n, startfac uint) (uint, bool) { // note that this is the reverse of IsPrime
-
-	var t uint = startfac
-
-	UintSqrt := usqrt(n)
-
-	for t <= UintSqrt {
-		if n%t == 0 {
-			return t, true
-		}
-		if t == 2 {
-			t = 3
-		} else {
-			t += 2
-		}
-	}
-	return 0, false
-} // IsPrime
-
-//----------------------------------------------- usqrt ---------------------------
-func usqrt(u uint) uint {
-
-	sqrt := u / 2
-
-	for i := 0; i < 30; i++ {
-		guess := u / sqrt
-		sqrt = (guess + sqrt) / 2
-		if sqrt-guess <= 1 { // recall that this is not floating math.
-			break
-		}
-	}
-	return sqrt
-}
-*/
 
 //-------------------------------------------------------------------------
 RETURN calcPairType FUNCTION GetResult(string s) {
