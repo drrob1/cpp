@@ -73,6 +73,7 @@ int main(argcargv) {
    8 Jul 16 -- Added display of stack dump to always happen, and a start up message.
   22 Jan 20 -- Now called rpnc2.cpp, so I can modify for use with Qt.
   28 Jan 20 -- Added makesubst.
+   2 Feb 20 -- Made a simple output formatting change.  Started translating my Go code on prime and primefac.
 */
 
   double R;
@@ -124,7 +125,7 @@ int main(argcargv) {
 //      cout << " debugging steps.  Before makesubst INBUF is " << INBUF << endl;
     INBUF = makesubst(INBUF);
 //      cout << " debugging steps.  After makesubst INBUF is " << INBUF << endl;
-
+    cout << endl;  // so errors don't come right after the prompt for input.
     calcpair = GetResult(INBUF);
 
     IF NOT calcpair.ss.empty() THEN

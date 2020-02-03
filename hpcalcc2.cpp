@@ -48,6 +48,7 @@
   25 Jan 20 -- Code is basically working.  Added sigfig, ? for help, and StackNames array.
   27 Jan 20 -- Made sigfig = -1 to see what that does.  It works like in Go.  I guess this is std behavior.
    2 Feb 20 -- Added fixN command to behave like sigN command.
+   2 Feb 20 -- Started to add the prime and primefac command code, derived from Go.
 */
 
 /*
@@ -405,6 +406,149 @@ RETURN int FUNCTION HCF(int a, int b) {
   UNTIL (r EQ 0);
   return a1;
 };// HCF
+
+/*  From Go.  Will convert to C++. */
+// ------------------------------------------------- IsPrime -----------------
+//  func IsPrime(real float64) bool { // The real input is to allow from stack.
+bool FUNCTION IsPrime(double real) { // The real input is to allow from stack.
+
+	int t = 3;
+	int RoundSqrt, Uint, Sqrt;  // Uint was just that in Go, but I won't do that here.
+
+	Uint = round(abs(real));
+
+	if (Uint == 0 || Uint == 1) {
+		return false;
+	} else if (Uint == 2 || Uint == 3) {
+		return true;
+	} else if (Uint % 2 == 0) {
+		return false;
+	}
+
+	Sqrt = sqrt(real);
+	RoundSqrt = round(Sqrt);
+
+	WHILE t <= RoundSqrt DO
+		if (Uint%t == 0) {
+			return false;
+		}
+		t += 2;
+	ENDWHILE;
+	return true;
+} // IsPrime
+
+/*  From Go.  Will convert to C++.
+// ------------------------------------------------- PrimeFactorization ---------------------------------
+func PrimeFactorization(N int) []int {
+	var PD = [...]int{2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47} // Prime divisors array
+
+	PrimeFactors := make([]int, 0, 10)
+
+	n := N
+	for i := 0; i < len(PD); i++ { // outer loop to sequentially test the prime divisors
+		for n > 0 && n%PD[i] == 0 {
+			PrimeFactors = append(PrimeFactors, PD[i])
+			n = n / PD[i]
+		}
+		if n == 0 || IsPrimeInt(n) {
+			PrimeFactors = append(PrimeFactors, n)
+			break
+		}
+	}
+	return PrimeFactors
+
+} // PrimeFactorization
+
+// ------------------------------------------------- IsPrimeInt -----------------
+func IsPrimeInt(n int) bool {
+
+	var t uint64 = 3
+
+	Uint := uint64(n)
+
+	if Uint == 0 || Uint == 1 {
+		return false
+	} else if Uint == 2 || Uint == 3 {
+		return true
+	} else if Uint%2 == 0 {
+		return false
+	}
+
+	sqrt := math.Sqrt(float64(Uint))
+	UintSqrt := uint64(sqrt)
+
+	for t <= UintSqrt {
+		if Uint%t == 0 {
+			return false
+		}
+		t += 2
+	}
+	return true
+} // IsPrimeInt
+
+// --------------------------------------- PrimeFactorMemoized -------------------
+func PrimeFactorMemoized(U uint) []uint {
+
+	if U == 0 {
+		return nil
+	}
+
+	var val uint = 2
+
+	PrimeUfactors := make([]uint, 0, 20)
+
+	//	fmt.Print("u, fac, val, primeflag : ")
+	for u := U; u > 1; {
+		fac, facflag := NextPrimeFac(u, val)
+		//		fmt.Print(u, " ", fac, " ", val, " ", primeflag, ", ")
+		if facflag {
+			PrimeUfactors = append(PrimeUfactors, fac)
+			u = u / fac
+			val = fac
+		} else {
+			PrimeUfactors = append(PrimeUfactors, u)
+			break
+		}
+	}
+	//	fmt.Println()
+	return PrimeUfactors
+}
+
+// ------------------------------------------------- NextPrimeFac -----------------
+func NextPrimeFac(n, startfac uint) (uint, bool) { // note that this is the reverse of IsPrime
+
+	var t uint = startfac
+
+	UintSqrt := usqrt(n)
+
+	for t <= UintSqrt {
+		if n%t == 0 {
+			return t, true
+		}
+		if t == 2 {
+			t = 3
+		} else {
+			t += 2
+		}
+	}
+	return 0, false
+} // IsPrime
+
+//----------------------------------------------- usqrt ---------------------------
+func usqrt(u uint) uint {
+
+	sqrt := u / 2
+
+	for i := 0; i < 30; i++ {
+		guess := u / sqrt
+		sqrt = (guess + sqrt) / 2
+		if sqrt-guess <= 1 { // recall that this is not floating math.
+			break
+		}
+	}
+	return sqrt
+}
+*/
 
 //-------------------------------------------------------------------------
 RETURN calcPairType FUNCTION GetResult(string s) {
