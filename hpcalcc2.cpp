@@ -476,7 +476,8 @@ vector<int> FUNCTION PrimeFactorization(int N) {
     PrimeFactors.clear();
 
 	n = N;
-	FOR int i = 0; i < sizeof(PD); i++ DO // outer loop to sequentially test the prime divisors
+    int lenPD = (int) sizeof(PD);
+	FOR int i = 0; i < lenPD; i++ DO // outer loop to sequentially test the prime divisors
 		WHILE n > 0 && n%PD[i] == 0 DO
 			PrimeFactors.push_back(PD[i]);
 			n = n / PD[i];
@@ -514,49 +515,50 @@ bool FUNCTION NextPrimeFac(int n, int REF startfac) { // note that this is the r
 
 	int UintSqrt = usqrt(n);
 
-	for t <= UintSqrt {
-		if n%t == 0 {
-			return t, true;
-		}
-		if t == 2 {
+	WHILE t <= UintSqrt DO
+		IF n % t == 0 THEN
+            startfac = t;  // in Go, this was returned part of a tuple.  Not allowed in C++.
+			return true;
+		ENDIF;
+		IF t == 2 THEN
 			t = 3;
-		} else {
+		ELSE 
 			t += 2;
-		}
-	}
-	return 0, false;
+		ENDIF;
+	ENDWHILE;
+    startfac = 0;  // in Go, this was returned part of a tuple.  Not allowed in C++.
+	return false;
 } // IsPrime
 
 // --------------------------------------- PrimeFactorMemoized -------------------
-func PrimeFactorMemoized(U uint) []uint {
+//func PrimeFactorMemoized(U uint) []uint {
+vector<int> FUNCTION PrimeFactorMemoized(int U) {
 
-	if U == 0 {
-		return nil
+    vector<int> PrimeUfactors;
+
+    PrimeUfactors.clear();
+
+	if (U == 0) {
+		return PrimeUfactors;
 	}
 
-	var val uint = 2
+	int fac = 2;
 
-	PrimeUfactors := make([]uint, 0, 20)
-
-	//	fmt.Print("u, fac, val, primeflag : ")
-	for u := U; u > 1; {
-		fac, facflag := NextPrimeFac(u, val)
-		//		fmt.Print(u, " ", fac, " ", val, " ", primeflag, ", ")
-		if facflag {
-			PrimeUfactors = append(PrimeUfactors, fac)
-			u = u / fac
-			val = fac
+	FOR int i = U; i > 1; DO
+		bool facflag = NextPrimeFac(i, fac); // fac is a REF param
+		if (facflag) {
+			PrimeUfactors.push_back(fac);
+			i = i / fac;
 		} else {
-			PrimeUfactors = append(PrimeUfactors, u)
-			break
+			PrimeUfactors.push_back(i);
+			break;
 		}
-	}
-	//	fmt.Println()
-	return PrimeUfactors
-}
+	ENDFOR;
+	return PrimeUfactors;
+} // PrimeFactorMemoized
 
 //-------------------------------------------------------------------------
-RETURN calcPairType FUNCTION GetResult(string s) {
+calcPairType FUNCTION GetResult(string s) {
 /*
   struct calcPairType {  // defined in header file
     vector<string> ss;
@@ -633,6 +635,40 @@ RETURN calcPairType FUNCTION GetResult(string s) {
                           sigfig = -1;
                         END;
                       END;
+                    ELSIF Token.uStr.compare("PRIME") EQ 0 THEN
+                      PushStacks();
+                      int n = round(Stack[X]);
+                      IF IsPrime(n) THEN
+                          char s[50];
+                          sprintf(s,"%10.0g is prime.",Stack[X]);
+                          string str = s;
+                          calcpair.ss.push_back(str);
+                      ELSE
+                          char s[50];
+                          sprintf(s,"%10.0f is not prime.",Stack[X]);
+                          string str = s;
+                          calcpair.ss.push_back(str);
+                      ENDIF;
+
+                    ELSIF Token.uStr.find("PRIMEF") EQ 0 THEN
+                      PushStacks();
+                      int n = round(Stack[X]);
+                      vector<int> primefactors = PrimeFactorMemoized(n);
+                      vector<int>::iterator primeit;
+
+                      // always will have as factors 1 and itself.  Cannot get an empty set of factors.
+                      string str;
+                      FOR primeit = primefactors.begin(); primeit != primefactors.end(); primeit++ DO
+                        char s[50];
+                        sprintf(s, "%d", *primeit);
+                        string s1 = s;
+                        str.append(s1);
+                        str.append(", ");
+                      ENDIF;
+                      str.pop_back();  // delete the last ", "
+                      str.pop_back();  // delete the last ", "
+                      calcpair.ss.push_back(str);
+
                     ELSIF Token.uStr.compare("SQR") EQ 0 THEN
                       LastX = Stack[X];
                       PushStacks();
@@ -648,7 +684,8 @@ RETURN calcPairType FUNCTION GetResult(string s) {
                     ELSIF Token.uStr.compare("CURT") EQ 0 THEN
                       LastX = Stack[X];
                       PushStacks();
-                      Stack[X] = exp(log(Stack[X])/3.0);
+                      // Stack[X] = exp(log(Stack[X])/3.0); old way
+                      Stack[X] = cbrt(Stack[X]);
                     ELSIF Token.uStr.compare("VOL") EQ 0 THEN
                       LastX = Stack[X];
                       PushStacks();
@@ -666,12 +703,13 @@ RETURN calcPairType FUNCTION GetResult(string s) {
                       calcpair.ss.push_back(" , or UP -- stack up.  ! or DN -- stack down.");
                       calcpair.ss.push_back(" Dump, Dumpfixed, Dumpfloat, Sho -- dump the stack to the terminal.");
                       calcpair.ss.push_back(" sigN, fixN -- set the sigfig amount, range 0..9");
+                      calcpair.ss.push_back(" prime, primefac -- calls IsPrime and PrimeFacMemoized.");
                       calcpair.ss.push_back(" EXP,LN -- evaluate exp(X) or ln(X) and put result back into X.");
                       calcpair.ss.push_back(" ^  -- ABS(Y) to the X power, put result in X and pop stack 1 reg.  Rounds X");
                       calcpair.ss.push_back(" **  -- ABS(Y) to the X power, put result in X and pop stack 1 reg.");
                       calcpair.ss.push_back(" INT, ROUND, FRAC, PI -- do what their names suggest.");
                       calcpair.ss.push_back(" MOD -- evaluate Y MOD X, put result in X and pop stack 1 reg.");
-		      calcpair.ss.push_back(" %   -- does XY/100, places result in X.  Leaves Y alone.");
+		              calcpair.ss.push_back(" %   -- does XY/100, places result in X.  Leaves Y alone.");
                       calcpair.ss.push_back(" SIN,COS,TAN,ARCTAN,ARCSIN,ARCCOS -- In deg.");
                       calcpair.ss.push_back(" D2R -- perform degrees to radians conversion of the X register.");
                       calcpair.ss.push_back(" R2D -- perform radians to degrees conversion of the X register.");
