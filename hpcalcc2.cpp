@@ -49,6 +49,7 @@
   27 Jan 20 -- Made sigfig = -1 to see what that does.  It works like in Go.  I guess this is std behavior.
    2 Feb 20 -- Added fixN command to behave like sigN command.
    2 Feb 20 -- Started to add the prime and primefac command code, derived from Go.
+   4 Feb 20 -- Fiddled with a format code for the prime cmd.
 */
 
 /*
@@ -640,7 +641,7 @@ calcPairType FUNCTION GetResult(string s) {
                       int n = round(Stack[X]);
                       IF IsPrime(n) THEN
                           char s[50];
-                          sprintf(s,"%10.0g is prime.",Stack[X]);
+                          sprintf(s,"%10.0f is prime.",Stack[X]);
                           string str = s;
                           calcpair.ss.push_back(str);
                       ELSE
