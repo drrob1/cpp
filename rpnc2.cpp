@@ -74,6 +74,7 @@ int main(argcargv) {
   22 Jan 20 -- Now called rpnc2.cpp, so I can modify for use with Qt.
   28 Jan 20 -- Added makesubst.
    2 Feb 20 -- Made a simple output formatting change.  Started translating my Go code on prime and primefac.
+   8 Feb 20 -- Added PopX, after first doing this in Go.
 */
 
   double R;
