@@ -52,6 +52,7 @@
    4 Feb 20 -- Fiddled with a format code for the prime cmd.
    7 Feb 20 -- Fixed a bug in greg cmd with regards to stack management.  And found an oddity on STACKDN, in that it does not alter X.  Don't really remember why not.
    8 Feb 20 -- Added PopX, after doing this in Go first.  Now that PopX works, I'm using it in other spots also.
+                 And HCF now returns the HCF as a string without altering the stack.
 */
 
 /*
@@ -583,7 +584,7 @@ calcPairType FUNCTION GetResult(string s) {
   }
 */
 
-  int c,c1,c2;  // these are used for the HCF command
+//  int c,c1,c2;  // these are used for the HCF command
   int I,year;
   TokenType Token;
   bool EOL;
@@ -824,12 +825,17 @@ calcPairType FUNCTION GetResult(string s) {
                         calcpair.ss.push_back(" Cannot convert X register to hex string, as number is out of range.");
                       ENDIF; // Hex command
                     ELSIF Token.uStr.compare("HCF") EQ 0  THEN
-                      PushStacks();
+                      int c,c1,c2; 
+//                                                             PushStacks();
                       c1 = abs(round(Stack[X]));
                       c2 = abs(round(Stack[Y]));
                       c  = HCF(c2,c1);
-                      STACKUP();
-                      Stack[X] = c;
+                      string s = "HCF between X and Y is ";
+                      string r = to_string(c);
+                      s.append(r);
+                      calcpair.ss.push_back(s);
+//                                                             STACKUP();
+//                                                             Stack[X] = c;
                     ELSIF Token.uStr.compare("P") EQ 0  THEN
                       //  essentially do nothing but print RESULT= line again.
                     ELSIF Token.uStr.compare("FRAC") EQ 0  THEN
