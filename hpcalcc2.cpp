@@ -53,6 +53,8 @@
    7 Feb 20 -- Fixed a bug in greg cmd with regards to stack management.  And found an oddity on STACKDN, in that it does not alter X.  Don't really remember why not.
    8 Feb 20 -- Added PopX, after doing this in Go first.  Now that PopX works, I'm using it in other spots also.
                  And HCF now returns the HCF as a string without altering the stack.
+   9 Feb 20 -- Added that > or < will also swap X <--> Y.  And removed the call to PushStackMatrix from commands that do not alter the stack, like hol.
+                 And changed how DOW works, now it doesn't alter stack but returns a string message.
 */
 
 /*
@@ -593,7 +595,7 @@ calcPairType FUNCTION GetResult(string s) {
 */
 
 //  int c,c1,c2;  // these are used for the HCF command
-  int I,year;
+  int I; // took year out of this line to make it more locally defined.
   TokenType Token;
   bool EOL;
   calcPairType calcpair;
@@ -612,7 +614,7 @@ calcPairType FUNCTION GetResult(string s) {
                  PUSHX(Token.rSum);
                  PushStacks();
                  break;
-      case OP  : IF (I EQ 6) OR (I EQ 20) THEN
+      case OP  : IF (I EQ 6) OR (I EQ 20) OR (I EQ 1) OR (I EQ 3) THEN // modified 02/09/2020 11:30:49 AM so <>, ><, <, > all swap X and Y.
       	            SWAPXY();
                  ELSE
                     LastX = Stack[X];
@@ -766,7 +768,7 @@ calcPairType FUNCTION GetResult(string s) {
                       PUSHX(MemReg);
                     ELSIF Token.uStr.compare("UNDO") EQ 0 THEN
                      RollDownStacks();
-                     // PopStacks();
+                     // PopStacks();  bad idea because it's the roll operation that allow easy undo/redo.
                     ELSIF Token.uStr.compare("REDO") EQ 0 THEN
                       RollUpStacks();
                     ELSIF Token.uStr.compare("SWAP") EQ 0 THEN
@@ -915,15 +917,20 @@ calcPairType FUNCTION GetResult(string s) {
                       PUSHX(mdy.d);
                       PUSHX(mdy.y);
                     ELSIF Token.uStr.compare("DOW") EQ 0 THEN
-                      PushStacks();
-                      LastX = Stack[X];
-                      Stack[X] = (lround(LastX) MOD 7);
+                      // PushStacks();
+                      // LastX = Stack[X];
+                      // Stack[X] = (lround(LastX) MOD 7);
+                      int dow = lround(Stack[X]) MOD 7;
+                      char s[50];
+                      sprintf(s," dow is %d, Juldate in X is %ld, which is a %s.",dow, lround(Stack[X]), DAYNAMES[dow].c_str());
+                      string str = s;
+                      calcpair.ss.push_back(str);
                     ELSIF Token.uStr.compare("PI") EQ 0 THEN
                       PushStacks();
                       PUSHX(PI);
                     ELSIF Token.uStr.compare("HOL") EQ 0 THEN
-                      PushStacks();
-                      year = round(Stack[X]);
+                      // PushStacks();  doesn't change the stack.  I don't think it ever did.
+                      int year = round(Stack[X]);
                       IF year < 30 THEN
                         year += 2000;
                       ELSIF year < 100 THEN
