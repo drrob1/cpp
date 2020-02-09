@@ -374,6 +374,14 @@ PROCEDURE PushStacks() {
   ENDFOR;
 }; // PushStacks
 //--------------------------------------------------------
+PROCEDURE PopStacks() {  // also works as an undo for main stack.
+    for (int i = X; i < StackSize; i++) {
+        Stack[i] = StackMatrix[0][i];
+    }
+
+    StacksDown();
+}
+//--------------------------------------------------------
 PROCEDURE RollDownStacks() {    // undo operation for main stack
   int j;
   ARRAYOF  double TempStack[StackSize];
@@ -757,7 +765,8 @@ calcPairType FUNCTION GetResult(string s) {
                     ELSIF Token.uStr.compare("RCL") EQ 0 THEN
                       PUSHX(MemReg);
                     ELSIF Token.uStr.compare("UNDO") EQ 0 THEN
-                      RollDownStacks();
+                     RollDownStacks();
+                     // PopStacks();
                     ELSIF Token.uStr.compare("REDO") EQ 0 THEN
                       RollUpStacks();
                     ELSIF Token.uStr.compare("SWAP") EQ 0 THEN
