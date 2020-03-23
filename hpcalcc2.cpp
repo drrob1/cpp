@@ -691,7 +691,7 @@ calcPairType FUNCTION GetResult(string s) {
                           vector<int> primefactors = PrimeFactorMemoized(n);
                           vector<int>::iterator primeit;
 
-                      // always will have as factors 1 and itself.  Cannot get an empty set of factors.
+                      // always will have as factors 1 and itself.  Cannot get an empty set of factors.  Turns out this commend is wrong, hence need for more code.
                           FOR primeit = primefactors.begin(); primeit != primefactors.end(); primeit++ DO
                             char s[50];
                             sprintf(s, "%d", *primeit);
