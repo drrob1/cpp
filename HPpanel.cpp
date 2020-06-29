@@ -71,6 +71,7 @@ REVISION HISTORY
               And changed name to HPpanel.cpp
 30 Apr 15 -- Fixed bug in IsPrime that turned out to be the UNTIL macro.  And changed TRUE to true, etc.
                Note that ncurses is C code, not C++, and bool is not a std type in C.
+29 Jun 20 -- Removed an unused variable from IsPrime().               
 --------------------------------------*/
 extern  HolType Holidays;
 extern const int StackSize;
@@ -376,7 +377,7 @@ ENDPROC;
 RETURN bool FUNCTION IsPrime(long lc) IS
 
   long t,m;
-  char ch;
+//    char ch;  Not used.  Discovered 06/29/2020 05:15:39 PM
 
   IF (lc EQ 0) OR (lc EQ 1) THEN return false;
   ELSIF (lc EQ 2) OR (lc EQ 3) THEN return true;
